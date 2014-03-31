@@ -23,11 +23,4 @@ define USBMOUNT_INSTALL_TARGET_CMDS
 	fi
 endef
 
-define USBMOUNT_UNINSTALL_TARGET_CMDS
-	rm -rf $(TARGET_DIR)/etc/usbmount.d			\
-		$(TARGET_DIR)/etc/usbmount.conf			\
-		$(TARGET_DIR)/usr/share/usbmount/usbmount	\
-		$(TARGET_DIR)/lib/udev/rules.d/usbmount.rules
-endef
-
 $(eval $(generic-package))
