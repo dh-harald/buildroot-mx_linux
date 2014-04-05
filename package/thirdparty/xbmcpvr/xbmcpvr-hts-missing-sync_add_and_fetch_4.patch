@@ -1,3 +1,12 @@
+From fe537a2063afb6142050865b7f23c0674e941b13 Mon Sep 17 00:00:00 2001
+From: dhead666 <myfoolishgames@gmail.com>
+Date: Wed, 5 Mar 2014 20:21:37 +0200
+Subject: [PATCH] libhts patch
+
+---
+ lib/libhts/Makefile.am | 1 +
+ 1 file changed, 1 insertion(+)
+
 diff --git a/lib/libhts/Makefile.am b/lib/libhts/Makefile.am
 index 002dbcf..e2cb320 100644
 --- a/lib/libhts/Makefile.am
@@ -9,5 +18,7 @@ index 002dbcf..e2cb320 100644
 +libhts_la_LDFLAGS=-lgcc
  
  $(LIB): libhts.la
-        cp -f .libs/libhts.a .
+ 	cp -f .libs/libhts.a .
+-- 
+1.9.0
 
