@@ -4,9 +4,9 @@
 #
 #################################################################################
 
-XBMC_VERSION = dcaa33f394972a8e4763b34bd166cadec7825d5d
+XBMC_VERSION = Gotham
 XBMC_SITE_METHOD = git
-XBMC_SITE = git://github.com/CoreTech-Development/xbmc.git
+XBMC_SITE = git://github.com/xbmc/xbmc.git
 XBMC_INSTALL_STAGING = YES
 XBMC_INSTALL_TARGET = YES
 
@@ -54,7 +54,7 @@ XBMC_DEPENDENCIES += flac libmad libmpeg2 libogg \
   freetype jasper jpeg libmodplug libpng libungif tiff libcurl \
   libmicrohttpd libssh2 boost fribidi ncurses pcre libnfs afpfs-ng \
   libplist libshairport libbluray libcec \
-  readline expat libxml2 yajl samba libass opengl libusb-compat \
+  readline expat libxml2 libxslt yajl samba libass opengl libusb-compat \
   avahi udev tinyxml taglib18 libssh
 
 ifeq ($(BR2_ARM_AMLOGIC),y)

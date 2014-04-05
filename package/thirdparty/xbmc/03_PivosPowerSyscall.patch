@@ -1,0 +1,205 @@
+From b6a1a22697ff68266452639ec0e5335f5f40259e Mon Sep 17 00:00:00 2001
+From: davilla <davilla@4pi.com>
+Date: Sun, 23 Dec 2012 12:39:05 -0500
+Subject: [PATCH] [aml] add PivosPowerSyscall class to handle m3 suspend
+
+---
+ xbmc/powermanagement/PowerManager.cpp            |  3 +
+ xbmc/powermanagement/linux/Makefile              |  3 +-
+ xbmc/powermanagement/linux/PivosPowerSyscall.cpp | 93 ++++++++++++++++++++++++
+ xbmc/powermanagement/linux/PivosPowerSyscall.h   | 47 ++++++++++++
+ 4 files changed, 145 insertions(+), 1 deletion(-)
+ create mode 100644 xbmc/powermanagement/linux/PivosPowerSyscall.cpp
+ create mode 100644 xbmc/powermanagement/linux/PivosPowerSyscall.h
+
+diff --git a/xbmc/powermanagement/PowerManager.cpp b/xbmc/powermanagement/PowerManager.cpp
+index 590a887..e413559 100644
+--- a/xbmc/powermanagement/PowerManager.cpp
++++ b/xbmc/powermanagement/PowerManager.cpp
+@@ -47,6 +47,7 @@
+ #include "linux/ConsoleDeviceKitPowerSyscall.h"
+ #include "linux/LogindUPowerSyscall.h"
+ #include "linux/UPowerSyscall.h"
++#include "linux/PivosPowerSyscall.h"
+ #if defined(HAS_HAL)
+ #include "linux/HALPowerSyscall.h"
+ #endif // HAS_HAL
+@@ -86,6 +87,8 @@ void CPowerManager::Initialize()
+     m_instance = new CLogindUPowerSyscall();
+   else if (CUPowerSyscall::HasUPower())
+     m_instance = new CUPowerSyscall();
++  else if (CPivosPowerSyscall::HasPivosPowerSyscall())
++    m_instance = new CPivosPowerSyscall();
+ #if defined(HAS_HAL)
+   else if(1)
+     m_instance = new CHALPowerSyscall();
+diff --git a/xbmc/powermanagement/linux/Makefile b/xbmc/powermanagement/linux/Makefile
+index fc6f8b5..07a5e15 100644
+--- a/xbmc/powermanagement/linux/Makefile
++++ b/xbmc/powermanagement/linux/Makefile
+@@ -3,8 +3,9 @@ SRCS=ConsoleDeviceKitPowerSyscall.cpp \
+      HALPowerSyscall.cpp \
+      UPowerSyscall.cpp \
+      LogindUPowerSyscall.cpp
++SRCS += PivosPowerSyscall.cpp
+ 
+-LIB=powermanagement_linux.a
++LIB   = powermanagement_linux.a
+ 
+ include ../../../Makefile.include
+ -include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))
+diff --git a/xbmc/powermanagement/linux/PivosPowerSyscall.cpp b/xbmc/powermanagement/linux/PivosPowerSyscall.cpp
+new file mode 100644
+index 0000000..df76ca9
+--- /dev/null
++++ b/xbmc/powermanagement/linux/PivosPowerSyscall.cpp
+@@ -0,0 +1,93 @@
++/*
++ *      Copyright (C) 2012 Team XBMC
++ *      http://www.xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#include "system.h"
++#include "PivosPowerSyscall.h"
++#include "utils/AMLUtils.h"
++#include "utils/log.h"
++
++CPivosPowerSyscall::CPivosPowerSyscall()
++{
++  if (aml_get_cputype() == 1)
++  {
++    m_CanPowerdown = true;
++    m_CanSuspend   = false;
++  }
++  else
++  {
++    m_CanPowerdown = false;
++    m_CanSuspend   = true;
++  }
++  m_CanHibernate = false;
++  m_CanReboot    = true;
++}
++
++bool CPivosPowerSyscall::Powerdown()
++{
++  return true;
++}
++
++bool CPivosPowerSyscall::Suspend()
++{
++  CPowerSyscallWithoutEvents::Suspend();
++
++  aml_set_sysfs_str("/sys/power/state",  "mem");
++  return true;
++}
++
++bool CPivosPowerSyscall::Hibernate()
++{
++  return false;
++}
++
++bool CPivosPowerSyscall::Reboot()
++{
++  return true;
++}
++
++bool CPivosPowerSyscall::CanPowerdown()
++{
++  return m_CanPowerdown;
++}
++
++bool CPivosPowerSyscall::CanSuspend()
++{
++  return m_CanSuspend;
++}
++
++bool CPivosPowerSyscall::CanHibernate()
++{
++  return m_CanHibernate;
++}
++
++bool CPivosPowerSyscall::CanReboot()
++{
++  return m_CanReboot;
++}
++
++int CPivosPowerSyscall::BatteryLevel()
++{
++  return 0;
++}
++
++bool CPivosPowerSyscall::HasPivosPowerSyscall()
++{
++  return aml_present();
++}
+diff --git a/xbmc/powermanagement/linux/PivosPowerSyscall.h b/xbmc/powermanagement/linux/PivosPowerSyscall.h
+new file mode 100644
+index 0000000..e25b0d5
+--- /dev/null
++++ b/xbmc/powermanagement/linux/PivosPowerSyscall.h
+@@ -0,0 +1,47 @@
++/*
++ *      Copyright (C) 2012 Team XBMC
++ *      http://www.xbmc.org
++ *
++ *  This Program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2, or (at your option)
++ *  any later version.
++ *
++ *  This Program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with XBMC; see the file COPYING.  If not, see
++ *  <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#include "powermanagement/IPowerSyscall.h"
++
++class CPivosPowerSyscall : public CPowerSyscallWithoutEvents
++{
++public:
++  CPivosPowerSyscall();
++  virtual ~CPivosPowerSyscall() {}
++
++  virtual bool Powerdown();
++  virtual bool Suspend();
++  virtual bool Hibernate();
++  virtual bool Reboot();
++
++  virtual bool CanPowerdown();
++  virtual bool CanSuspend();
++  virtual bool CanHibernate();
++  virtual bool CanReboot();
++  virtual int  BatteryLevel();
++
++  static bool HasPivosPowerSyscall();
++
++private:
++  bool m_CanPowerdown;
++  bool m_CanSuspend;
++  bool m_CanHibernate;
++  bool m_CanReboot;
++};
+-- 
+1.9.1
+

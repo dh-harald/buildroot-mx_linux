@@ -1,0 +1,97 @@
+From 0198b3c7e4c120519b5ac9dbce2840a78b3718fd Mon Sep 17 00:00:00 2001
+From: davilla <davilla@4pi.com>
+Date: Mon, 31 Dec 2012 15:46:07 -0500
+Subject: [PATCH] [aml] rework m3 syspend/resume
+
+---
+ xbmc/powermanagement/linux/PivosPowerSyscall.cpp | 30 +++++++++++++++++++++---
+ xbmc/powermanagement/linux/PivosPowerSyscall.h   |  6 ++++-
+ 2 files changed, 32 insertions(+), 4 deletions(-)
+
+diff --git a/xbmc/powermanagement/linux/PivosPowerSyscall.cpp b/xbmc/powermanagement/linux/PivosPowerSyscall.cpp
+index df76ca9..7864292 100644
+--- a/xbmc/powermanagement/linux/PivosPowerSyscall.cpp
++++ b/xbmc/powermanagement/linux/PivosPowerSyscall.cpp
+@@ -37,6 +37,9 @@
+   }
+   m_CanHibernate = false;
+   m_CanReboot    = true;
++
++  m_OnResume  = false;
++  m_OnSuspend = false;
+ }
+ 
+ bool CPivosPowerSyscall::Powerdown()
+@@ -46,9 +49,7 @@ bool CPivosPowerSyscall::Powerdown()
+ 
+ bool CPivosPowerSyscall::Suspend()
+ {
+-  CPowerSyscallWithoutEvents::Suspend();
+-
+-  aml_set_sysfs_str("/sys/power/state",  "mem");
++  m_OnSuspend = true;
+   return true;
+ }
+ 
+@@ -87,6 +88,29 @@ int CPivosPowerSyscall::BatteryLevel()
+   return 0;
+ }
+ 
++bool CPivosPowerSyscall::PumpPowerEvents(IPowerEventsCallback *callback)
++{
++  if (m_OnSuspend)
++  {
++    // do the CPowerManager::OnSleep() callback
++    callback->OnSleep();
++    m_OnResume  = true;
++    m_OnSuspend = false;
++    // wait for all our threads to do their thing
++    usleep(1 * 1000 * 1000);
++    aml_set_sysfs_str("/sys/power/state", "mem");
++    usleep(100 * 1000);
++  }
++  else if (m_OnResume)
++  {
++    // do the CPowerManager::OnWake() callback
++    callback->OnWake();
++    m_OnResume = false;
++  }
++
++  return true;
++}
++
+ bool CPivosPowerSyscall::HasPivosPowerSyscall()
+ {
+   return aml_present();
+diff --git a/xbmc/powermanagement/linux/PivosPowerSyscall.h b/xbmc/powermanagement/linux/PivosPowerSyscall.h
+index e25b0d5..a6c0ac9 100644
+--- a/xbmc/powermanagement/linux/PivosPowerSyscall.h
++++ b/xbmc/powermanagement/linux/PivosPowerSyscall.h
+@@ -20,7 +20,7 @@
+ 
+ #include "powermanagement/IPowerSyscall.h"
+ 
+-class CPivosPowerSyscall : public CPowerSyscallWithoutEvents
++class CPivosPowerSyscall : public IPowerSyscall
+ {
+ public:
+   CPivosPowerSyscall();
+@@ -36,6 +36,7 @@ class CPivosPowerSyscall : public CPowerSyscallWithoutEvents
+   virtual bool CanHibernate();
+   virtual bool CanReboot();
+   virtual int  BatteryLevel();
++  virtual bool PumpPowerEvents(IPowerEventsCallback *callback);
+ 
+   static bool HasPivosPowerSyscall();
+ 
+@@ -44,4 +45,7 @@ class CPivosPowerSyscall : public CPowerSyscallWithoutEvents
+   bool m_CanSuspend;
+   bool m_CanHibernate;
+   bool m_CanReboot;
++
++  bool m_OnResume;
++  bool m_OnSuspend;
+ };
+-- 
+1.9.1
+

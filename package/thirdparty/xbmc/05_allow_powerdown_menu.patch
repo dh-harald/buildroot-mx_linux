@@ -1,0 +1,30 @@
+From 927ceaa72099fbb86920a263bdb6896127286589 Mon Sep 17 00:00:00 2001
+From: toys4me <toys4me@fake.server>
+Date: Mon, 4 Mar 2013 10:25:10 -0800
+Subject: [PATCH] Allow Powerdown menu for devices other than M1
+
+Just because device can't power itself off, doesn't mean system shouldn't be given opportuntity to have a clean exit from xbmc.
+
+This renables Powerdown menu so S95-xbmc script has a chance to run and dismount drives and removable media.
+
+On M3 users will have to physically remove power to power off.
+---
+ xbmc/powermanagement/linux/PivosPowerSyscall.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xbmc/powermanagement/linux/PivosPowerSyscall.cpp b/xbmc/powermanagement/linux/PivosPowerSyscall.cpp
+index 7864292..d3b85ca 100644
+--- a/xbmc/powermanagement/linux/PivosPowerSyscall.cpp
++++ b/xbmc/powermanagement/linux/PivosPowerSyscall.cpp
+@@ -32,7 +32,7 @@
+   }
+   else
+   {
+-    m_CanPowerdown = false;
++    m_CanPowerdown = true;
+     m_CanSuspend   = true;
+   }
+   m_CanHibernate = false;
+-- 
+1.9.1
+

@@ -1,0 +1,25 @@
+From 801ad59beada613194f3eb35f84014a7b3910962 Mon Sep 17 00:00:00 2001
+From: croniccorey <cronmod.dev@gmail.com>
+Date: Mon, 7 Oct 2013 05:52:36 -0400
+Subject: [PATCH] Disable suspend fuction
+
+---
+ xbmc/powermanagement/linux/PivosPowerSyscall.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xbmc/powermanagement/linux/PivosPowerSyscall.cpp b/xbmc/powermanagement/linux/PivosPowerSyscall.cpp
+index d3b85ca..8397c12 100644
+--- a/xbmc/powermanagement/linux/PivosPowerSyscall.cpp
++++ b/xbmc/powermanagement/linux/PivosPowerSyscall.cpp
+@@ -33,7 +33,7 @@
+   else
+   {
+     m_CanPowerdown = true;
+-    m_CanSuspend   = true;
++    m_CanSuspend   = false;
+   }
+   m_CanHibernate = false;
+   m_CanReboot    = true;
+-- 
+1.9.1
+
