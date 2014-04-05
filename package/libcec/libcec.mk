@@ -4,8 +4,9 @@
 #
 ################################################################################
 
-LIBCEC_VERSION = libcec-2.1.1
-LIBCEC_SITE = http://github.com/Pulse-Eight/libcec/tarball/$(LIBCEC_VERSION)
+LIBCEC_VERSION = 30d91946a284571ac9f56c5190ea78e279807a44
+LIBCEC_SITE = https://github.com/Pulse-Eight/libcec.git
+LIBCEC_SITE_METHOD = git
 LIBCEC_LICENSE = GPLv2+
 LIBCEC_LICENSE_FILES = COPYING
 
