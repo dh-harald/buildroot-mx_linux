@@ -1,0 +1,45 @@
+#! /bin/sh
+# oscam startup script inspired by the Debian one in the package
+
+# Author: Yann E. MORIN <yann.morin.1998@free.fr>
+
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+NAME=oscam
+DAEMON=/usr/bin/$NAME
+PIDFILE=/var/run/$NAME.pid
+
+ARGS="-c /etc/oscam -t /tmp -b -d 0 -r 2"
+
+[ -f "${DAEMON}" -a -x "${DAEMON}" ] || exit 0
+
+case "$1" in
+    start)
+        printf "Starting OSCam daemon: "
+        if start-stop-daemon -S -q -p ${PIDFILE} -m --exec "${DAEMON}" -- ${ARGS}; then
+            printf "OK\n"
+        else
+            printf "failed\n"
+        fi
+        ;;
+    stop)
+        printf "Stoping OSCam daemon: "
+        start-stop-daemon -K -q -p ${PIDFILE} -s TERM
+        sleep 2
+        if start-stop-daemon -K -q -p ${PIDFILE} -t; then
+            printf "failed, killing: "
+            start-stop-daemon -K -q -p ${PIDFILE} -s KILL -o
+        fi
+        printf "OK\n"
+        ;;
+    restart|force-reload)
+        "${0}" stop
+        sleep 2
+        "${0}" start
+        ;;
+    *)
+        echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload}" >&2
+        exit 1
+        ;;
+esac
+
+:

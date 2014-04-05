@@ -1,0 +1,9 @@
+config BR2_PACKAGE_OSCAM
+	bool "oscam"
+	depends on BR2_PACKAGE_LIBUSB
+	depends on BR2_PACKAGE_OPENSSL
+	help
+	  Open Source Conditional Access Module
+
+	  http://www.streamboard.tv/oscam
+
