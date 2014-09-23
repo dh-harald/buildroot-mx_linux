@@ -11,11 +11,11 @@ Signed-off-by: "Yann E. MORIN" <yann.morin.1998@free.fr>
 diff -durN tvheadend-v3.5.orig/configure tvheadend-v3.5/configure
 --- tvheadend-v3.5.orig/configure	2013-02-15 14:41:26.000000000 +0100
 +++ tvheadend-v3.5/configure	2013-02-16 15:41:16.675556099 +0100
-@@ -179,15 +179,16 @@
+@@ -335,15 +335,16 @@
  #
  # DVB scan
  #
--if enabled linuxdvb && enabled dvbscan; then
+-if enabled dvbscan; then
 -  printf "${TAB}" "fetching dvb-scan files ..."
 -  "${ROOTDIR}/support/getmuxlist"
 -  if [ $? -ne 0 ]; then
@@ -35,20 +35,23 @@ diff -durN tvheadend-v3.5.orig/configure tvheadend-v3.5/configure
 +#  echo "ok"
 +#fi
  
- # ###########################################################################
- # Write config
+ #
+ # epoll
 diff -durN tvheadend-v3.5.orig/Makefile tvheadend-v3.5/Makefile
 --- tvheadend-v3.5.orig/Makefile	2013-02-15 14:41:26.000000000 +0100
 +++ tvheadend-v3.5/Makefile	2013-02-16 15:41:38.218821287 +0100
-@@ -211,7 +211,7 @@
+@@ -320,8 +320,8 @@
  SRCS-${CONFIG_BUNDLE}     += bundle.c
  BUNDLES-yes               += docs/html docs/docresources src/webui/static
  BUNDLES-yes               += data/conf
 -BUNDLES-${CONFIG_DVBSCAN} += data/dvb-scan
+-BUNDLES                    = $(BUNDLES-yes)
 +#BUNDLES-${CONFIG_DVBSCAN} += data/dvb-scan
- BUNDLES                    = $(BUNDLES-yes)
++#BUNDLES                    = $(BUNDLES-yes)
+ ALL-$(CONFIG_DVBSCAN)     += check_dvb_scan
  
  #
+
 diff -durN tvheadend-v3.5.orig/support/posix.mk tvheadend-v3.5/support/posix.mk
 --- tvheadend-v3.5.orig/support/posix.mk	2013-02-15 14:41:26.000000000 +0100
 +++ tvheadend-v3.5/support/posix.mk	2013-02-16 15:42:41.015290003 +0100
