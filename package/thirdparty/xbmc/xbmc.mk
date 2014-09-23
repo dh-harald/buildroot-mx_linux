@@ -4,13 +4,13 @@
 #
 #################################################################################
 
-XBMC_VERSION = 13.0-Gotham_r2
+XBMC_VERSION = $(call qstrip,$(BR2_PACKAGE_XBMC_REV))
 XBMC_SITE_METHOD = git
 XBMC_SITE = git://github.com/xbmc/xbmc.git
 XBMC_INSTALL_STAGING = YES
 XBMC_INSTALL_TARGET = YES
 
-XBMC_DEPENDENCIES = host-lzo host-sdl_image
+XBMC_DEPENDENCIES = host-gawk host-gettext host-gperf host-lzo host-sdl_image host-swig
 
 XBMC_CONF_OPT += --enable-neon --enable-gles --disable-sdl --disable-x11 --disable-xrandr \
   --disable-projectm --enable-debug --disable-joystick --with-cpu=cortex-a9
@@ -44,7 +44,7 @@ XBMC_DEPENDENCIES += flac libmad libmpeg2 libogg \
   python lzo zlib libgcrypt openssl mysql_client sqlite fontconfig \
   freetype jasper jpeg libmodplug libpng libungif tiff libcurl \
   libmicrohttpd libssh2 boost fribidi ncurses pcre libnfs afpfs-ng \
-  libplist libshairport libbluray libcec \
+  libplist libshairplay libbluray libcec \
   readline expat libxml2 yajl samba libass opengl libusb-compat \
   avahi udev tinyxml taglib18 libssh libxslt
 

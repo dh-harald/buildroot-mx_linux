@@ -63,7 +63,7 @@ config BR2_PACKAGE_XBMC
 	select BR2_PACKAGE_AFPFS_NG
 	select BR2_PACKAGE_LIBBLURAY
 	select BR2_PACKAGE_LIBPLIST
-	select BR2_PACKAGE_LIBSHAIRPORT
+	select BR2_PACKAGE_LIBSHAIRPLAY
 	select BR2_PACKAGE_AVAHI
 	select BR2_PACKAGE_AVAHI_DAEMON
 	select BR2_PACKAGE_NCURSES_TARGET_PANEL
@@ -88,6 +88,18 @@ config BR2_PACKAGE_XBMC
 
 menu "XBMC Options"
 	depends on BR2_PACKAGE_XBMC
+
+comment "XBMC Build Options"
+
+config BR2_PACKAGE_XBMC_REV
+	string "Github Revision"
+	default "13.2-Gotham"
+	help
+		This option will set the github revision.
+
+		Github: "git://github.com/xbmc/xbmc.git"
+		Default: "13.2-Gotham"
+		Beware: Changing this could break patchs
 
 comment "XBMC Customization Options"
 
