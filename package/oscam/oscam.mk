@@ -6,7 +6,7 @@
 
 OSCAM_SITE            = http://www.streamboard.tv/svn/oscam/trunk
 OSCAM_SITE_METHOD     = svn
-OSCAM_VERSION         = 9661
+OSCAM_VERSION         = 9865
 OSCAM_LICENSE         = GPLv3
 OSCAM_LICENSE_FILES   = COPYING
 
